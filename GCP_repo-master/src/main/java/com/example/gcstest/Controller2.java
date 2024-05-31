@@ -13,8 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 @RestController
 @RequestMapping("/gcp")
 public class Controller2 {
@@ -24,17 +22,21 @@ public class Controller2 {
 
     @GetMapping("/send-data")
     public String sendData() {
-        BlobId id = BlobId.of("gs://dev_gcs_spectr-25069_bucket", "TestGCPFile");
+        String bucketName = "dev_gcs_spectr-25069_bucket";
+        String objectName = "TestGCPFile";
+        BlobId id = BlobId.of(bucketName, objectName);
         BlobInfo info = BlobInfo.newBuilder(id).build();
-        File file = new File("D:","TestGCSFile.txt");
-        byte[] arr = null;
+
+        File file = new File("D:", "TestGCSFile.txt");
+        byte[] arr;
         try {
             arr = Files.readAllBytes(Paths.get(file.toURI()));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to read file", e);
         }
-        storage.create(info,arr);
+
+        storage.create(info, arr);
         return "File Upload success";
     }
-
 }
+
